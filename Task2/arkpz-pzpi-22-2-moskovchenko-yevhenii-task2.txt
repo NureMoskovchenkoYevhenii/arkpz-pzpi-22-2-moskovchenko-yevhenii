@@ -1,0 +1,1884 @@
+МІНІСТЕРСТВО ОСВІТИ І НАУКИ УКРАЇНИ
+ХАРКІВСЬКИЙ НАЦІОНАЛЬНИЙ УНІВЕРСИТЕТ РАДІОЕЛЕКТРОНІКИ
+
+
+
+
+
+
+
+
+Звіт
+з лабораторної роботи №2
+ з дисципліни «Аналіз та рефакторинг коду»
+на тему: «РОЗРОБКА БАЗИ ДАНИХ ДЛЯ СЕРВЕРНОЇ ЧАСТИНИ ПРОГРАМНОЇ СИСТЕМИ ТА ПРИКЛАДНОГО ПРОГРАМНОГО ІНТЕРФЕЙСУ (API)»
+
+
+
+
+
+
+
+
+
+
+Виконав:
+ студент групи ПЗПІ-22-2
+Московченко Євгеній Олексійович
+Перевірив:
+ст. викладач кафедри ПІ
+Сокорчук Ігор Петрович
+
+
+Харків 2024
+1 МЕТА РОБОТИ
+Метою лабораторної роботи є розробка бази даних та прикладного програмного інтерфейсу (API) для серверної частини програмної системи для управління мережею фастфуд-закладів, створення схеми та діаграми бази даних, реалізація CRUD операцій, бізнес-логіки, розробку функцій для взаємодії з базою даних, реалізацію API для інтеграції серверної частини з клієнтськими додатками, а також тестування правильного відправлення запитів.
+2 ХІД РОБОТИ
+Спочатку була створена UML діаграма прецедентів для серверної частини системи та ER діаграма даних, що відображала структуру даних та їх зв'язки. Діаграма прецедентів та ER-діаграма наведені у додатках Б і В відповідно.
+Наступним кроком було створення бази даних програмної системи і  діаграма структури бази даних для візуалізації її архітектури. Потім були розроблені функції роботи з базою даних, використовуючи ORM.
+Далі був розроблений API для взаємодії серверної частини з клієнтами, використовуючи REST з допомогою модульної архітектури з використанням сервісів, контролерів, маперів та репозитаріїв. 
+ВИСНОВКИ
+У результаті виконання лабораторної роботи було розроблено серверну логіку та звʼязок з новоствореною базою даних за допомогою API. В результаті успішного тестування можна сказати, що цей звʼязок працює правильно.
+________________
+
+
+ДОДАТОК А
+Посилання на відео
+________________
+
+
+ДОДАТОК Б
+UML діаграма прецедентів
+  
+
+Рисунок Б.1 - UML діаграма прецедентів
+________________
+ДОДАТОК В
+ER-діаграма
+
+
+  
+
+Рисунок В.1 - ER-діаграма
+________________
+ДОДАТОК Г
+Діаграма структури бд
+
+
+  
+
+Рисунок Г.1 - Діаграма структури бд
+________________
+ДОДАТОК Ґ
+OpenAPI специфікація
+1 {
+2   "openapi": "3.0.1",
+3   "info": {
+4     "title": "StaffFlow api",
+5     "version": "1.0"
+6   },
+7   "paths": {
+8     "/api/ChangeRequests": {
+9       "get": {
+10         "tags": [
+11           "ChangeRequests"
+12         ],
+13         "responses": {
+14           "200": {
+15             "description": "OK"
+16           }
+17         }
+18       },
+19       "post": {
+20         "tags": [
+21           "ChangeRequests"
+22         ],
+23         "requestBody": {
+24           "content": {
+25             "application/json": {
+26               "schema": {
+27                 "$ref": "#/components/schemas/ChangeRequestDto"
+28               }
+29             },
+30             "text/json": {
+31               "schema": {
+32                 "$ref": "#/components/schemas/ChangeRequestDto"
+33               }
+34             },
+35             "application/*+json": {
+36               "schema": {
+37                 "$ref": "#/components/schemas/ChangeRequestDto"
+38               }
+39             }
+40           }
+41         },
+42         "responses": {
+43           "200": {
+44             "description": "OK"
+45           }
+46         }
+47       }
+48     },
+49     "/api/ChangeRequests/{id}": {
+50       "get": {
+51         "tags": [
+52           "ChangeRequests"
+53         ],
+54         "parameters": [
+55           {
+56             "name": "id",
+57             "in": "path",
+58             "required": true,
+59             "schema": {
+60               "type": "integer",
+61               "format": "int32"
+62             }
+63           }
+64         ],
+65         "responses": {
+66           "200": {
+67             "description": "OK"
+68           }
+69         }
+70       },
+71       "put": {
+72         "tags": [
+73           "ChangeRequests"
+74         ],
+75         "parameters": [
+76           {
+77             "name": "id",
+78             "in": "path",
+79             "required": true,
+80             "schema": {
+81               "type": "integer",
+82               "format": "int32"
+83             }
+84           }
+85         ],
+86         "requestBody": {
+87           "content": {
+88             "application/json": {
+89               "schema": {
+90                 "$ref": "#/components/schemas/ChangeRequestDto"
+91               }
+92             },
+93             "text/json": {
+94               "schema": {
+95                 "$ref": "#/components/schemas/ChangeRequestDto"
+96               }
+97             },
+98             "application/*+json": {
+99               "schema": {
+100                 "$ref": "#/components/schemas/ChangeRequestDto"
+101               }
+102             }
+103           }
+104         },
+105         "responses": {
+106           "200": {
+107             "description": "OK"
+108           }
+109         }
+110       },
+111       "delete": {
+112         "tags": [
+113           "ChangeRequests"
+114         ],
+115         "parameters": [
+116           {
+117             "name": "id",
+118             "in": "path",
+119             "required": true,
+120             "schema": {
+121               "type": "integer",
+122               "format": "int32"
+123             }
+124           }
+125         ],
+126         "responses": {
+127           "200": {
+128             "description": "OK"
+129           }
+130         }
+131       }
+132     },
+133     "/api/DayTypes": {
+134       "get": {
+135         "tags": [
+136           "DayTypes"
+137         ],
+138         "responses": {
+139           "200": {
+140             "description": "OK"
+141           }
+142         }
+143       },
+144       "post": {
+145         "tags": [
+146           "DayTypes"
+147         ],
+148         "requestBody": {
+149           "content": {
+150             "application/json": {
+151               "schema": {
+152                 "$ref": "#/components/schemas/DayTypeDto"
+153               }
+154             },
+155             "text/json": {
+156               "schema": {
+157                 "$ref": "#/components/schemas/DayTypeDto"
+158               }
+159             },
+160             "application/*+json": {
+161               "schema": {
+162                 "$ref": "#/components/schemas/DayTypeDto"
+163               }
+164             }
+165           }
+166         },
+167         "responses": {
+168           "200": {
+169             "description": "OK"
+170           }
+171         }
+172       }
+173     },
+174     "/api/DayTypes/{id}": {
+175       "get": {
+176         "tags": [
+177           "DayTypes"
+178         ],
+179         "parameters": [
+180           {
+181             "name": "id",
+182             "in": "path",
+183             "required": true,
+184             "schema": {
+185               "type": "integer",
+186               "format": "int32"
+187             }
+188           }
+189         ],
+190         "responses": {
+191           "200": {
+192             "description": "OK"
+193           }
+194         }
+195       },
+196       "put": {
+197         "tags": [
+198           "DayTypes"
+199         ],
+200         "parameters": [
+201           {
+202             "name": "id",
+203             "in": "path",
+204             "required": true,
+205             "schema": {
+206               "type": "integer",
+207               "format": "int32"
+208             }
+209           }
+210         ],
+211         "requestBody": {
+212           "content": {
+213             "application/json": {
+214               "schema": {
+215                 "$ref": "#/components/schemas/DayTypeDto"
+216               }
+217             },
+218             "text/json": {
+219               "schema": {
+220                 "$ref": "#/components/schemas/DayTypeDto"
+221               }
+222             },
+223             "application/*+json": {
+224               "schema": {
+225                 "$ref": "#/components/schemas/DayTypeDto"
+226               }
+227             }
+228           }
+229         },
+230         "responses": {
+231           "200": {
+232             "description": "OK"
+233           }
+234         }
+235       },
+236       "delete": {
+237         "tags": [
+238           "DayTypes"
+239         ],
+240         "parameters": [
+241           {
+242             "name": "id",
+243             "in": "path",
+244             "required": true,
+245             "schema": {
+246               "type": "integer",
+247               "format": "int32"
+248             }
+249           }
+250         ],
+251         "responses": {
+252           "200": {
+253             "description": "OK"
+254           }
+255         }
+256       }
+257     },
+258     "/api/SensorData": {
+259       "get": {
+260         "tags": [
+261           "SensorData"
+262         ],
+263         "responses": {
+264           "200": {
+265             "description": "OK"
+266           }
+267         }
+268       },
+269       "post": {
+270         "tags": [
+271           "SensorData"
+272         ],
+273         "requestBody": {
+274           "content": {
+275             "application/json": {
+276               "schema": {
+277                 "$ref": "#/components/schemas/SensorDataDto"
+278               }
+279             },
+280             "text/json": {
+281               "schema": {
+282                 "$ref": "#/components/schemas/SensorDataDto"
+283               }
+284             },
+285             "application/*+json": {
+286               "schema": {
+287                 "$ref": "#/components/schemas/SensorDataDto"
+288               }
+289             }
+290           }
+291         },
+292         "responses": {
+293           "200": {
+294             "description": "OK"
+295           }
+296         }
+297       }
+298     },
+299     "/api/SensorData/{id}": {
+300       "get": {
+301         "tags": [
+302           "SensorData"
+303         ],
+304         "parameters": [
+305           {
+306             "name": "id",
+307             "in": "path",
+308             "required": true,
+309             "schema": {
+310               "type": "integer",
+311               "format": "int32"
+312             }
+313           }
+314         ],
+315         "responses": {
+316           "200": {
+317             "description": "OK"
+318           }
+319         }
+320       },
+321       "put": {
+322         "tags": [
+323           "SensorData"
+324         ],
+325         "parameters": [
+326           {
+327             "name": "id",
+328             "in": "path",
+329             "required": true,
+330             "schema": {
+331               "type": "integer",
+332               "format": "int32"
+333             }
+334           }
+335         ],
+336         "requestBody": {
+337           "content": {
+338             "application/json": {
+339               "schema": {
+340                 "$ref": "#/components/schemas/SensorDataDto"
+341               }
+342             },
+343             "text/json": {
+344               "schema": {
+345                 "$ref": "#/components/schemas/SensorDataDto"
+346               }
+347             },
+348             "application/*+json": {
+349               "schema": {
+350                 "$ref": "#/components/schemas/SensorDataDto"
+351               }
+352             }
+353           }
+354         },
+355         "responses": {
+356           "200": {
+357             "description": "OK"
+358           }
+359         }
+360       },
+361       "delete": {
+362         "tags": [
+363           "SensorData"
+364         ],
+365         "parameters": [
+366           {
+367             "name": "id",
+368             "in": "path",
+369             "required": true,
+370             "schema": {
+371               "type": "integer",
+372               "format": "int32"
+373             }
+374           }
+375         ],
+376         "responses": {
+377           "200": {
+378             "description": "OK"
+379           }
+380         }
+381       }
+382     },
+383     "/api/UserChangeRequests": {
+384       "get": {
+385         "tags": [
+386           "UserChangeRequests"
+387         ],
+388         "responses": {
+389           "200": {
+390             "description": "OK"
+391           }
+392         }
+393       },
+394       "post": {
+395         "tags": [
+396           "UserChangeRequests"
+397         ],
+398         "requestBody": {
+399           "content": {
+400             "application/json": {
+401               "schema": {
+402                 "$ref": "#/components/schemas/UserChangeRequestDto"
+403               }
+404             },
+405             "text/json": {
+406               "schema": {
+407                 "$ref": "#/components/schemas/UserChangeRequestDto"
+408               }
+409             },
+410             "application/*+json": {
+411               "schema": {
+412                 "$ref": "#/components/schemas/UserChangeRequestDto"
+413               }
+414             }
+415           }
+416         },
+417         "responses": {
+418           "200": {
+419             "description": "OK"
+420           }
+421         }
+422       }
+423     },
+424     "/api/UserChangeRequests/{id}": {
+425       "get": {
+426         "tags": [
+427           "UserChangeRequests"
+428         ],
+429         "parameters": [
+430           {
+431             "name": "id",
+432             "in": "path",
+433             "required": true,
+434             "schema": {
+435               "type": "integer",
+436               "format": "int32"
+437             }
+438           }
+439         ],
+440         "responses": {
+441           "200": {
+442             "description": "OK"
+443           }
+444         }
+445       },
+446       "put": {
+447         "tags": [
+448           "UserChangeRequests"
+449         ],
+450         "parameters": [
+451           {
+452             "name": "id",
+453             "in": "path",
+454             "required": true,
+455             "schema": {
+456               "type": "integer",
+457               "format": "int32"
+458             }
+459           }
+460         ],
+461         "requestBody": {
+462           "content": {
+463             "application/json": {
+464               "schema": {
+465                 "$ref": "#/components/schemas/UserChangeRequestDto"
+466               }
+467             },
+468             "text/json": {
+469               "schema": {
+470                 "$ref": "#/components/schemas/UserChangeRequestDto"
+471               }
+472             },
+473             "application/*+json": {
+474               "schema": {
+475                 "$ref": "#/components/schemas/UserChangeRequestDto"
+476               }
+477             }
+478           }
+479         },
+480         "responses": {
+481           "200": {
+482             "description": "OK"
+483           }
+484         }
+485       },
+486       "delete": {
+487         "tags": [
+488           "UserChangeRequests"
+489         ],
+490         "parameters": [
+491           {
+492             "name": "id",
+493             "in": "path",
+494             "required": true,
+495             "schema": {
+496               "type": "integer",
+497               "format": "int32"
+498             }
+499           }
+500         ],
+501         "responses": {
+502           "200": {
+503             "description": "OK"
+504           }
+505         }
+506       }
+507     },
+508     "/api/Users": {
+509       "get": {
+510         "tags": [
+511           "Users"
+512         ],
+513         "responses": {
+514           "200": {
+515             "description": "OK"
+516           }
+517         }
+518       },
+519       "post": {
+520         "tags": [
+521           "Users"
+522         ],
+523         "requestBody": {
+524           "content": {
+525             "application/json": {
+526               "schema": {
+527                 "$ref": "#/components/schemas/UserDto"
+528               }
+529             },
+530             "text/json": {
+531               "schema": {
+532                 "$ref": "#/components/schemas/UserDto"
+533               }
+534             },
+535             "application/*+json": {
+536               "schema": {
+537                 "$ref": "#/components/schemas/UserDto"
+538               }
+539             }
+540           }
+541         },
+542         "responses": {
+543           "200": {
+544             "description": "OK"
+545           }
+546         }
+547       }
+548     },
+549     "/api/Users/{id}": {
+550       "get": {
+551         "tags": [
+552           "Users"
+553         ],
+554         "parameters": [
+555           {
+556             "name": "id",
+557             "in": "path",
+558             "required": true,
+559             "schema": {
+560               "type": "integer",
+561               "format": "int32"
+562             }
+563           }
+564         ],
+565         "responses": {
+566           "200": {
+567             "description": "OK"
+568           }
+569         }
+570       },
+571       "put": {
+572         "tags": [
+573           "Users"
+574         ],
+575         "parameters": [
+576           {
+577             "name": "id",
+578             "in": "path",
+579             "required": true,
+580             "schema": {
+581               "type": "integer",
+582               "format": "int32"
+583             }
+584           }
+585         ],
+586         "requestBody": {
+587           "content": {
+588             "application/json": {
+589               "schema": {
+590                 "$ref": "#/components/schemas/UserDto"
+591               }
+592             },
+593             "text/json": {
+594               "schema": {
+595                 "$ref": "#/components/schemas/UserDto"
+596               }
+597             },
+598             "application/*+json": {
+599               "schema": {
+600                 "$ref": "#/components/schemas/UserDto"
+601               }
+602             }
+603           }
+604         },
+605         "responses": {
+606           "200": {
+607             "description": "OK"
+608           }
+609         }
+610       },
+611       "delete": {
+612         "tags": [
+613           "Users"
+614         ],
+615         "parameters": [
+616           {
+617             "name": "id",
+618             "in": "path",
+619             "required": true,
+620             "schema": {
+621               "type": "integer",
+622               "format": "int32"
+623             }
+624           }
+625         ],
+626         "responses": {
+627           "200": {
+628             "description": "OK"
+629           }
+630         }
+631       }
+632     },
+633     "/api/UserWorkingDays": {
+634       "get": {
+635         "tags": [
+636           "UserWorkingDays"
+637         ],
+638         "responses": {
+639           "200": {
+640             "description": "OK"
+641           }
+642         }
+643       },
+644       "post": {
+645         "tags": [
+646           "UserWorkingDays"
+647         ],
+648         "requestBody": {
+649           "content": {
+650             "application/json": {
+651               "schema": {
+652                 "$ref": "#/components/schemas/UserWorkingDayDto"
+653               }
+654             },
+655             "text/json": {
+656               "schema": {
+657                 "$ref": "#/components/schemas/UserWorkingDayDto"
+658               }
+659             },
+660             "application/*+json": {
+661               "schema": {
+662                 "$ref": "#/components/schemas/UserWorkingDayDto"
+663               }
+664             }
+665           }
+666         },
+667         "responses": {
+668           "200": {
+669             "description": "OK"
+670           }
+671         }
+672       }
+673     },
+674     "/api/UserWorkingDays/{id}": {
+675       "get": {
+676         "tags": [
+677           "UserWorkingDays"
+678         ],
+679         "parameters": [
+680           {
+681             "name": "id",
+682             "in": "path",
+683             "required": true,
+684             "schema": {
+685               "type": "integer",
+686               "format": "int32"
+687             }
+688           }
+689         ],
+690         "responses": {
+691           "200": {
+692             "description": "OK"
+693           }
+694         }
+695       },
+696       "put": {
+697         "tags": [
+698           "UserWorkingDays"
+699         ],
+700         "parameters": [
+701           {
+702             "name": "id",
+703             "in": "path",
+704             "required": true,
+705             "schema": {
+706               "type": "integer",
+707               "format": "int32"
+708             }
+709           }
+710         ],
+711         "requestBody": {
+712           "content": {
+713             "application/json": {
+714               "schema": {
+715                 "$ref": "#/components/schemas/UserWorkingDayDto"
+716               }
+717             },
+718             "text/json": {
+719               "schema": {
+720                 "$ref": "#/components/schemas/UserWorkingDayDto"
+721               }
+722             },
+723             "application/*+json": {
+724               "schema": {
+725                 "$ref": "#/components/schemas/UserWorkingDayDto"
+726               }
+727             }
+728           }
+729         },
+730         "responses": {
+731           "200": {
+732             "description": "OK"
+733           }
+734         }
+735       },
+736       "delete": {
+737         "tags": [
+738           "UserWorkingDays"
+739         ],
+740         "parameters": [
+741           {
+742             "name": "id",
+743             "in": "path",
+744             "required": true,
+745             "schema": {
+746               "type": "integer",
+747               "format": "int32"
+748             }
+749           }
+750         ],
+751         "responses": {
+752           "200": {
+753             "description": "OK"
+754           }
+755         }
+756       }
+757     },
+758     "/api/WorkingDays": {
+759       "get": {
+760         "tags": [
+761           "WorkingDays"
+762         ],
+763         "responses": {
+764           "200": {
+765             "description": "OK"
+766           }
+767         }
+768       },
+769       "post": {
+770         "tags": [
+771           "WorkingDays"
+772         ],
+773         "requestBody": {
+774           "content": {
+775             "application/json": {
+776               "schema": {
+777                 "$ref": "#/components/schemas/WorkingDayDto"
+778               }
+779             },
+780             "text/json": {
+781               "schema": {
+782                 "$ref": "#/components/schemas/WorkingDayDto"
+783               }
+784             },
+785             "application/*+json": {
+786               "schema": {
+787                 "$ref": "#/components/schemas/WorkingDayDto"
+788               }
+789             }
+790           }
+791         },
+792         "responses": {
+793           "200": {
+794             "description": "OK"
+795           }
+796         }
+797       }
+798     },
+799     "/api/WorkingDays/{id}": {
+800       "get": {
+801         "tags": [
+802           "WorkingDays"
+803         ],
+804         "parameters": [
+805           {
+806             "name": "id",
+807             "in": "path",
+808             "required": true,
+809             "schema": {
+810               "type": "integer",
+811               "format": "int32"
+812             }
+813           }
+814         ],
+815         "responses": {
+816           "200": {
+817             "description": "OK"
+818           }
+819         }
+820       },
+821       "put": {
+822         "tags": [
+823           "WorkingDays"
+824         ],
+825         "parameters": [
+826           {
+827             "name": "id",
+828             "in": "path",
+829             "required": true,
+830             "schema": {
+831               "type": "integer",
+832               "format": "int32"
+833             }
+834           }
+835         ],
+836         "requestBody": {
+837           "content": {
+838             "application/json": {
+839               "schema": {
+840                 "$ref": "#/components/schemas/WorkingDayDto"
+841               }
+842             },
+843             "text/json": {
+844               "schema": {
+845                 "$ref": "#/components/schemas/WorkingDayDto"
+846               }
+847             },
+848             "application/*+json": {
+849               "schema": {
+850                 "$ref": "#/components/schemas/WorkingDayDto"
+851               }
+852             }
+853           }
+854         },
+855         "responses": {
+856           "200": {
+857             "description": "OK"
+858           }
+859         }
+860       },
+861       "delete": {
+862         "tags": [
+863           "WorkingDays"
+864         ],
+865         "parameters": [
+866           {
+867             "name": "id",
+868             "in": "path",
+869             "required": true,
+870             "schema": {
+871               "type": "integer",
+872               "format": "int32"
+873             }
+874           }
+875         ],
+876         "responses": {
+877           "200": {
+878             "description": "OK"
+879           }
+880         }
+881       }
+882     }
+883   },
+884   "components": {
+885     "schemas": {
+886       "ChangeRequestDto": {
+887         "type": "object",
+888         "properties": {
+889           "changeRequestId": {
+890             "type": "integer",
+891             "format": "int32"
+892           },
+893           "requestDate": {
+894             "type": "string",
+895             "format": "date-time"
+896           },
+897           "dayTypeId": {
+898             "type": "integer",
+899             "format": "int32"
+900           },
+901           "startDate": {
+902             "type": "string",
+903             "format": "date-time"
+904           },
+905           "endDate": {
+906             "type": "string",
+907             "format": "date-time"
+908           },
+909           "description": {
+910             "type": "string",
+911             "nullable": true
+912           }
+913         },
+914         "additionalProperties": false
+915       },
+916       "DayTypeDto": {
+917         "type": "object",
+918         "properties": {
+919           "dayTypeId": {
+920             "type": "integer",
+921             "format": "int32"
+922           },
+923           "dayTypeName": {
+924             "type": "string",
+925             "nullable": true
+926           }
+927         },
+928         "additionalProperties": false
+929       },
+930       "SensorDataDto": {
+931         "type": "object",
+932         "properties": {
+933           "id": {
+934             "type": "integer",
+935             "format": "int32"
+936           },
+937           "timestamp": {
+938             "type": "string",
+939             "format": "date-time"
+940           },
+941           "temperature": {
+942             "type": "number",
+943             "format": "double"
+944           },
+945           "humidity": {
+946             "type": "number",
+947             "format": "double"
+948           }
+949         },
+950         "additionalProperties": false
+951       },
+952       "UserChangeRequestDto": {
+953         "type": "object",
+954         "properties": {
+955           "userChangeRequestId": {
+956             "type": "integer",
+957             "format": "int32"
+958           },
+959           "userId": {
+960             "type": "integer",
+961             "format": "int32"
+962           },
+963           "changeRequestId": {
+964             "type": "integer",
+965             "format": "int32"
+966           }
+967         },
+968         "additionalProperties": false
+969       },
+970       "UserDto": {
+971         "type": "object",
+972         "properties": {
+973           "userId": {
+974             "type": "integer",
+975             "format": "int32"
+976           },
+977           "firstName": {
+978             "type": "string",
+979             "nullable": true
+980           },
+981           "lastName": {
+982             "type": "string",
+983             "nullable": true
+984           },
+985           "phoneNumber": {
+986             "type": "string",
+987             "nullable": true
+988           },
+989           "role": {
+990             "type": "string",
+991             "nullable": true
+992           },
+993           "password": {
+994             "type": "string",
+995             "nullable": true
+996           }
+997         },
+998         "additionalProperties": false
+999       },
+1000       "UserWorkingDayDto": {
+1001         "type": "object",
+1002         "properties": {
+1003           "userWorkingDayId": {
+1004             "type": "integer",
+1005             "format": "int32"
+1006           },
+1007           "userId": {
+1008             "type": "integer",
+1009             "format": "int32"
+1010           },
+1011           "workingDayId": {
+1012             "type": "integer",
+1013             "format": "int32"
+1014           }
+1015         },
+1016         "additionalProperties": false
+1017       },
+1018       "WorkingDayDto": {
+1019         "type": "object",
+1020         "properties": {
+1021           "workingDayId": {
+1022             "type": "integer",
+1023             "format": "int32"
+1024           },
+1025           "startTime": {
+1026             "type": "string",
+1027             "format": "date-time"
+1028           },
+1029           "endTime": {
+1030             "type": "string",
+1031             "format": "date-time"
+1032           },
+1033           "dayTypeId": {
+1034             "type": "integer",
+1035             "format": "int32"
+1036           }
+1037         },
+1038         "additionalProperties": false
+1039       }
+1040     }
+1041   }
+1042 }
+________________
+ДОДАТОК Д
+Логіка взаємодії серверної частини з БД
+
+
+1. public class UserChangeRequestService
+2. {
+3.     private readonly IUserChangeRequestRepository _userChangeRequestRepository;
+4. 
+5.     public UserChangeRequestService(IUserChangeRequestRepository userChangeRequestRepository)
+6.     {
+7.         _userChangeRequestRepository = userChangeRequestRepository;
+8.     }
+9. 
+10.     public void AddUserChangeRequest(UserChangeRequest userChangeRequest)
+11.     {
+12.         _userChangeRequestRepository.Add(userChangeRequest);
+13.     }
+14. 
+15.     public IEnumerable<UserChangeRequest> GetAllUserChangeRequests()
+16.     {
+17.         return _userChangeRequestRepository.GetAll();
+18.     }
+19. 
+20.     public UserChangeRequest GetUserChangeRequestById(int userChangeRequestId)
+21.     {
+22.         return _userChangeRequestRepository.GetById(userChangeRequestId);
+23.     }
+24. 
+25.     public void UpdateUserChangeRequest(int userChangeRequestId, UserChangeRequest updatedUserChangeRequest)
+26.     {
+27.         var userChangeRequest = _userChangeRequestRepository.GetById(userChangeRequestId);
+28.         if (userChangeRequest != null)
+29.         {
+30.             userChangeRequest.UserId = updatedUserChangeRequest.UserId;
+31.             userChangeRequest.ChangeRequestId = updatedUserChangeRequest.ChangeRequestId;
+32.             _userChangeRequestRepository.Update(userChangeRequest);
+33.         }
+34.     }
+35. 
+36.     public void DeleteUserChangeRequest(int userChangeRequestId)
+37.     {
+38.         _userChangeRequestRepository.Delete(userChangeRequestId);
+39.     }
+40. }
+41. 
+
+
+1. public class ChangeRequestService
+2. {
+3.     private readonly IChangeRequestRepository _changeRequestRepository;
+4. 
+5.     public ChangeRequestService(IChangeRequestRepository changeRequestRepository)
+6.     {
+7.         _changeRequestRepository = changeRequestRepository;
+8.     }
+9. 
+10.     public void AddChangeRequest(ChangeRequest changeRequest)
+11.     {
+12.         _changeRequestRepository.Add(changeRequest);
+13.     }
+14. 
+15.     public IEnumerable<ChangeRequest> GetAllChangeRequests()
+16.     {
+17.         return _changeRequestRepository.GetAll();
+18.     }
+19. 
+20.     public ChangeRequest GetChangeRequestById(int changeRequestId)
+21.     {
+22.         return _changeRequestRepository.GetById(changeRequestId);
+23.     }
+24. 
+25.     public void UpdateChangeRequest(int changeRequestId, ChangeRequest updatedChangeRequest)
+26.     {
+27.         var changeRequest = _changeRequestRepository.GetById(changeRequestId);
+28.         if (changeRequest != null)
+29.         {
+30.             changeRequest.RequestDate = updatedChangeRequest.RequestDate;
+31.             changeRequest.Status = updatedChangeRequest.Status;
+32.             changeRequest.DayTypeId = updatedChangeRequest.DayTypeId;
+33.             _changeRequestRepository.Update(changeRequest);
+34.         }
+35.     }
+36. 
+37.     public void DeleteChangeRequest(int changeRequestId)
+38.     {
+39.         _changeRequestRepository.Delete(changeRequestId);
+40.     }
+41. }
+42. 
+
+
+1. public class DayTypeService
+2. {
+3.     private readonly IDayTypeRepository _dayTypeRepository;
+4. 
+5.     public DayTypeService(IDayTypeRepository dayTypeRepository)
+6.     {
+7.         _dayTypeRepository = dayTypeRepository;
+8.     }
+9. 
+10.     public void AddDayType(DayType dayType)
+11.     {
+12.         _dayTypeRepository.Add(dayType);
+13.     }
+14. 
+15.     public IEnumerable<DayType> GetAllDayTypes()
+16.     {
+17.         return _dayTypeRepository.GetAll();
+18.     }
+19. 
+20.     public DayType GetDayTypeById(int dayTypeId)
+21.     {
+22.         return _dayTypeRepository.GetById(dayTypeId);
+23.     }
+24. 
+25.     public void UpdateDayType(int dayTypeId, DayType updatedDayType)
+26.     {
+27.         var dayType = _dayTypeRepository.GetById(dayTypeId);
+28.         if (dayType != null)
+29.         {
+30.             dayType.DayTypeName = updatedDayType.DayTypeName;
+31.             _dayTypeRepository.Update(dayType);
+32.         }
+33.     }
+34. 
+35.     public void DeleteDayType(int dayTypeId)
+36.     {
+37.         _dayTypeRepository.Delete(dayTypeId);
+38.     }
+39. }
+40. 
+
+
+1. public class SensorDataService
+2. {
+3.     private readonly ISensorDataRepository _sensorDataRepository;
+4. 
+5.     public SensorDataService(ISensorDataRepository sensorDataRepository)
+6.     {
+7.         _sensorDataRepository = sensorDataRepository;
+8.     }
+9. 
+10.     public void AddSensorData(SensorData sensorData)
+11.     {
+12.         _sensorDataRepository.Add(sensorData);
+13.     }
+14. 
+15.     public IEnumerable<SensorData> GetAllSensorData()
+16.     {
+17.         return _sensorDataRepository.GetAll();
+18.     }
+19. 
+20.     public SensorData GetSensorDataById(int id)
+21.     {
+22.         return _sensorDataRepository.GetById(id);
+23.     }
+24. 
+25.     public void UpdateSensorData(int id, SensorData updatedSensorData)
+26.     {
+27.         var sensorData = _sensorDataRepository.GetById(id);
+28.         if (sensorData != null)
+29.         {
+30.             sensorData.Timestamp = updatedSensorData.Timestamp;
+31.             sensorData.Temperature = updatedSensorData.Temperature;
+32.             sensorData.Humidity = updatedSensorData.Humidity;
+33.             _sensorDataRepository.Update(sensorData);
+34.         }
+35.     }
+36. 
+37.     public void DeleteSensorData(int id)
+38.     {
+39.         _sensorDataRepository.Delete(id);
+40.     }
+41. }
+42. 
+
+
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using BCrypt.Net;
+
+
+public class UserService
+{
+    private readonly IUserRepository _userRepository;
+
+
+    public UserService(IUserRepository userRepository)
+    {
+        _userRepository = userRepository;
+    }
+
+
+    public void AddUser(User user)
+    {
+        user.PasswordHash = HashPassword(user.PasswordHash);
+        _userRepository.Add(user);
+    }
+
+
+    public IEnumerable<User> GetAllUsers()
+    {
+        return _userRepository.GetAll();
+    }
+
+
+    public User GetUserById(int userId)
+    {
+        return _userRepository.GetById(userId);
+    }
+
+
+    public void UpdateUser(int userId, User updatedUser)
+    {
+        var user = _userRepository.GetById(userId);
+        if (user != null)
+        {
+            user.FirstName = updatedUser.FirstName;
+            user.LastName = updatedUser.LastName;
+            user.PhoneNumber = updatedUser.PhoneNumber;
+            user.Role = updatedUser.Role;
+
+
+            if (!string.IsNullOrEmpty(updatedUser.PasswordHash))
+            {
+                user.PasswordHash = HashPassword(updatedUser.PasswordHash);
+            }
+
+
+            _userRepository.Update(user);
+        }
+    }
+
+
+    public void DeleteUser(int userId)
+    {
+        _userRepository.Delete(userId);
+    }
+
+
+    private string HashPassword(string password)
+    {
+        return BCrypt.Net.BCrypt.HashPassword(password);
+    }
+}
+
+
+1. public class UserWorkingDayService
+2. {
+3.     private readonly IUserWorkingDayRepository _userWorkingDayRepository;
+4. 
+5.     public UserWorkingDayService(IUserWorkingDayRepository userWorkingDayRepository)
+6.     {
+7.         _userWorkingDayRepository = userWorkingDayRepository;
+8.     }
+9. 
+10.     public void AddUserWorkingDay(UserWorkingDay userWorkingDay)
+11.     {
+12.         _userWorkingDayRepository.Add(userWorkingDay);
+13.     }
+14. 
+15.     public IEnumerable<UserWorkingDay> GetAllUserWorkingDays()
+16.     {
+17.         return _userWorkingDayRepository.GetAll();
+18.     }
+19. 
+20.     public UserWorkingDay GetUserWorkingDayById(int userWorkingDayId)
+21.     {
+22.         return _userWorkingDayRepository.GetById(userWorkingDayId);
+23.     }
+24. 
+25.     public void UpdateUserWorkingDay(int userWorkingDayId, UserWorkingDay updatedUserWorkingDay)
+26.     {
+27.         var userWorkingDay = _userWorkingDayRepository.GetById(userWorkingDayId);
+28.         if (userWorkingDay != null)
+29.         {
+30.             userWorkingDay.UserId = updatedUserWorkingDay.UserId;
+31.             userWorkingDay.WorkingDayId = updatedUserWorkingDay.WorkingDayId;
+32.             _userWorkingDayRepository.Update(userWorkingDay);
+33.         }
+34.     }
+35. 
+36.     public void DeleteUserWorkingDay(int userWorkingDayId)
+37.     {
+38.         _userWorkingDayRepository.Delete(userWorkingDayId);
+39.     }
+40. }
+41. 
+
+
+1. public class WorkingDayService
+2. {
+3.     private readonly IWorkingDayRepository _workingDayRepository;
+4. 
+5.     public WorkingDayService(IWorkingDayRepository workingDayRepository)
+6.     {
+7.         _workingDayRepository = workingDayRepository;
+8.     }
+9. 
+10.     public void AddWorkingDay(WorkingDay workingDay)
+11.     {
+12.         _workingDayRepository.Add(workingDay);
+13.     }
+14. 
+15.     public IEnumerable<WorkingDay> GetAllWorkingDays()
+16.     {
+17.         return _workingDayRepository.GetAll();
+18.     }
+19. 
+20.     public WorkingDay GetWorkingDayById(int workingDayId)
+21.     {
+22.         return _workingDayRepository.GetById(workingDayId);
+23.     }
+24. 
+25.     public void UpdateWorkingDay(int workingDayId, WorkingDay updatedWorkingDay)
+26.     {
+27.         var workingDay = _workingDayRepository.GetById(workingDayId);
+28.         if (workingDay != null)
+29.         {
+30.             workingDay.StartTime = updatedWorkingDay.StartTime;
+31.             workingDay.EndTime = updatedWorkingDay.EndTime;
+32.             workingDay.DayTypeId = updatedWorkingDay.DayTypeId;
+33.             _workingDayRepository.Update(workingDay);
+34.         }
+35.     }
+36. 
+37.     public void DeleteWorkingDay(int workingDayId)
+38.     {
+39.         _workingDayRepository.Delete(workingDayId);
+40.     }
+41. }
+42. 
+
+
+________________
+
+
+ДОДАТОК Е
+Логіка взаємодії серверної частини з клієнтами
+
+
+1. using Microsoft.AspNetCore.Mvc;
+2. 
+3. [ApiController]
+4. [Route("api/[controller]")]
+5. public class ChangeRequestsController : ControllerBase
+6. {
+7.     private readonly ChangeRequestService _changeRequestService;
+8.     private readonly ChangeRequestMapper _changeRequestMapper;
+9. 
+10.     public ChangeRequestsController(ChangeRequestService changeRequestService, ChangeRequestMapper changeRequestMapper)
+11.     {
+12.         _changeRequestService = changeRequestService;
+13.         _changeRequestMapper = changeRequestMapper;
+14.     }
+15. 
+16.     [HttpGet]
+17.     public IActionResult GetAllChangeRequests()
+18.     {
+19.         var changeRequests = _changeRequestService.GetAllChangeRequests();
+20.         var changeRequestDtos = changeRequests.Select(cr => _changeRequestMapper.MapToDto(cr));
+21.         return Ok(changeRequestDtos);
+22.     }
+23. 
+24.     [HttpGet("{id}")]
+25.     public IActionResult GetChangeRequestById(int id)
+26.     {
+27.         var changeRequest = _changeRequestService.GetChangeRequestById(id);
+28.         if (changeRequest == null)
+29.         {
+30.             return NotFound();
+31.         }
+32.         var changeRequestDto = _changeRequestMapper.MapToDto(changeRequest);
+33.         return Ok(changeRequestDto);
+34.     }
+35. 
+36.     [HttpPost]
+37.     public IActionResult AddChangeRequest(ChangeRequestDto changeRequestDto)
+38.     {
+39.         var changeRequest = _changeRequestMapper.MapToEntity(changeRequestDto);
+40.         _changeRequestService.AddChangeRequest(changeRequest);
+41.         return CreatedAtAction(nameof(GetChangeRequestById), new { id = changeRequest.ChangeRequestId }, changeRequestDto);
+42.     }
+43. 
+44.     [HttpPut("{id}")]
+45.     public IActionResult UpdateChangeRequest(int id, ChangeRequestDto updatedChangeRequestDto)
+46.     {
+47.         var updatedChangeRequest = _changeRequestMapper.MapToEntity(updatedChangeRequestDto);
+48.         _changeRequestService.UpdateChangeRequest(id, updatedChangeRequest);
+49.         return NoContent();
+50.     }
+51. 
+52.     [HttpDelete("{id}")]
+53.     public IActionResult DeleteChangeRequest(int id)
+54.     {
+55.         _changeRequestService.DeleteChangeRequest(id);
+56.         return NoContent();
+57.     }
+58. }
+59. 
+
+
+1. using Microsoft.AspNetCore.Mvc;
+2. 
+3. [ApiController]
+4. [Route("api/[controller]")]
+5. public class DayTypesController : ControllerBase
+6. {
+7.     private readonly DayTypeService _dayTypeService;
+8.     private readonly DayTypeMapper _dayTypeMapper;
+9. 
+10.     public DayTypesController(DayTypeService dayTypeService, DayTypeMapper dayTypeMapper)
+11.     {
+12.         _dayTypeService = dayTypeService;
+13.         _dayTypeMapper = dayTypeMapper;
+14.     }
+15. 
+16.     [HttpGet]
+17.     public IActionResult GetAllDayTypes()
+18.     {
+19.         var dayTypes = _dayTypeService.GetAllDayTypes();
+20.         var dayTypeDtos = dayTypes.Select(dayType => _dayTypeMapper.MapToDto(dayType));
+21.         return Ok(dayTypeDtos);
+22.     }
+23. 
+24.     [HttpGet("{id}")]
+25.     public IActionResult GetDayTypeById(int id)
+26.     {
+27.         var dayType = _dayTypeService.GetDayTypeById(id);
+28.         if (dayType == null)
+29.         {
+30.             return NotFound();
+31.         }
+32.         var dayTypeDto = _dayTypeMapper.MapToDto(dayType);
+33.         return Ok(dayTypeDto);
+34.     }
+35. 
+36.     [HttpPost]
+37.     public IActionResult AddDayType(DayTypeDto dayTypeDto)
+38.     {
+39.         var dayType = _dayTypeMapper.MapToEntity(dayTypeDto);
+40.         _dayTypeService.AddDayType(dayType);
+41.         return CreatedAtAction(nameof(GetDayTypeById), new { id = dayType.DayTypeId }, dayTypeDto);
+42.     }
+43. 
+44.     [HttpPut("{id}")]
+45.     public IActionResult UpdateDayType(int id, DayTypeDto updatedDayTypeDto)
+46.     {
+47.         var updatedDayType = _dayTypeMapper.MapToEntity(updatedDayTypeDto);
+48.         _dayTypeService.UpdateDayType(id, updatedDayType);
+49.         return NoContent();
+50.     }
+51. 
+52.     [HttpDelete("{id}")]
+53.     public IActionResult DeleteDayType(int id)
+54.     {
+55.         _dayTypeService.DeleteDayType(id);
+56.         return NoContent();
+57.     }
+58. }
+59. 
+
+
+1. using Microsoft.AspNetCore.Mvc;
+2. 
+3. [ApiController]
+4. [Route("api/[controller]")]
+5. public class SensorDataController : ControllerBase
+6. {
+7.     private readonly SensorDataService _sensorDataService;
+8.     private readonly SensorDataMapper _sensorDataMapper;
+9. 
+10.     public SensorDataController(SensorDataService sensorDataService, SensorDataMapper sensorDataMapper)
+11.     {
+12.         _sensorDataService = sensorDataService;
+13.         _sensorDataMapper = sensorDataMapper;
+14.     }
+15. 
+16.     [HttpGet]
+17.     public IActionResult GetAllSensorData()
+18.     {
+19.         var sensorData = _sensorDataService.GetAllSensorData();
+20.         var sensorDataDtos = sensorData.Select(data => _sensorDataMapper.MapToDto(data));
+21.         return Ok(sensorDataDtos);
+22.     }
+23. 
+24.     [HttpGet("{id}")]
+25.     public IActionResult GetSensorDataById(int id)
+26.     {
+27.         var sensorData = _sensorDataService.GetSensorDataById(id);
+28.         if (sensorData == null)
+29.         {
+30.             return NotFound();
+31.         }
+32.         var sensorDataDto = _sensorDataMapper.MapToDto(sensorData);
+33.         return Ok(sensorDataDto);
+34.     }
+35. 
+36.     [HttpPost]
+37.     public IActionResult AddSensorData(SensorDataDto sensorDataDto)
+38.     {
+39.         var sensorData = _sensorDataMapper.MapToEntity(sensorDataDto);
+40.         _sensorDataService.AddSensorData(sensorData);
+41.         return CreatedAtAction(nameof(GetSensorDataById), new { id = sensorData.Id }, sensorDataDto);
+42.     }
+43. 
+44.     [HttpPut("{id}")]
+45.     public IActionResult UpdateSensorData(int id, SensorDataDto updatedSensorDataDto)
+46.     {
+47.         var updatedSensorData = _sensorDataMapper.MapToEntity(updatedSensorDataDto);
+48.         _sensorDataService.UpdateSensorData(id, updatedSensorData);
+49.         return NoContent();
+50.     }
+51. 
+52.     [HttpDelete("{id}")]
+53.     public IActionResult DeleteSensorData(int id)
+54.     {
+55.         _sensorDataService.DeleteSensorData(id);
+56.         return NoContent();
+57.     }
+58. }
+59. 
+
+
+1. using Microsoft.AspNetCore.Mvc;
+2. 
+3. [ApiController]
+4. [Route("api/[controller]")]
+5. public class UserChangeRequestsController : ControllerBase
+6. {
+7.     private readonly UserChangeRequestService _userChangeRequestService;
+8.     private readonly UserChangeRequestMapper _userChangeRequestMapper;
+9. 
+10.     public UserChangeRequestsController(UserChangeRequestService userChangeRequestService, UserChangeRequestMapper userChangeRequestMapper)
+11.     {
+12.         _userChangeRequestService = userChangeRequestService;
+13.         _userChangeRequestMapper = userChangeRequestMapper;
+14.     }
+15. 
+16.     [HttpGet]
+17.     public IActionResult GetAllUserChangeRequests()
+18.     {
+19.         var userChangeRequests = _userChangeRequestService.GetAllUserChangeRequests();
+20.         var userChangeRequestDtos = userChangeRequests.Select(ucr => _userChangeRequestMapper.MapToDto(ucr));
+21.         return Ok(userChangeRequestDtos);
+22.     }
+23. 
+24.     [HttpGet("{id}")]
+25.     public IActionResult GetUserChangeRequestById(int id)
+26.     {
+27.         var userChangeRequest = _userChangeRequestService.GetUserChangeRequestById(id);
+28.         if (userChangeRequest == null)
+29.         {
+30.             return NotFound();
+31.         }
+32.         var userChangeRequestDto = _userChangeRequestMapper.MapToDto(userChangeRequest);
+33.         return Ok(userChangeRequestDto);
+34.     }
+35. 
+36.     [HttpPost]
+37.     public IActionResult AddUserChangeRequest(UserChangeRequestDto userChangeRequestDto)
+38.     {
+39.         var userChangeRequest = _userChangeRequestMapper.MapToEntity(userChangeRequestDto);
+40.         _userChangeRequestService.AddUserChangeRequest(userChangeRequest);
+41.         return CreatedAtAction(nameof(GetUserChangeRequestById), new { id = userChangeRequest.UserChangeRequestId }, userChangeRequestDto);
+42.     }
+43. 
+44.     [HttpPut("{id}")]
+45.     public IActionResult UpdateUserChangeRequest(int id, UserChangeRequestDto updatedUserChangeRequestDto)
+46.     {
+47.         var updatedUserChangeRequest = _userChangeRequestMapper.MapToEntity(updatedUserChangeRequestDto);
+48.         _userChangeRequestService.UpdateUserChangeRequest(id, updatedUserChangeRequest);
+49.         return NoContent();
+50.     }
+51. 
+52.     [HttpDelete("{id}")]
+53.     public IActionResult DeleteUserChangeRequest(int id)
+54.     {
+55.         _userChangeRequestService.DeleteUserChangeRequest(id);
+56.         return NoContent();
+57.     }
+58. }
+59. 
+
+
+1. using Microsoft.AspNetCore.Mvc;
+2. 
+3. 
+4. [ApiController]
+5. [Route("api/[controller]")]
+6. public class UsersController : ControllerBase
+7. {
+8.     private readonly UserService _userService;
+9.     private readonly UserMapper _userMapper;
+10. 
+11.     public UsersController(UserService userService, UserMapper userMapper)
+12.     {
+13.         _userService = userService;
+14.         _userMapper = userMapper;
+15.     }
+16. 
+17.     [HttpGet]
+18.     public IActionResult GetAllUsers()
+19.     {
+20.         var users = _userService.GetAllUsers();
+21.         var userDtos = users.Select(user => _userMapper.MapToDto(user));
+22.         return Ok(userDtos);
+23.     }
+24. 
+25.     [HttpGet("{id}")]
+26.     public IActionResult GetUserById(int id)
+27.     {
+28.         var user = _userService.GetUserById(id);
+29.         if (user == null)
+30.         {
+31.             return NotFound();
+32.         }
+33.         var userDto = _userMapper.MapToDto(user);
+34.         return Ok(userDto);
+35.     }
+36. 
+37.     [HttpPost]
+38.     public IActionResult AddUser(UserDto userDto)
+39.     {
+40.         var user = _userMapper.MapToEntity(userDto);
+41.         _userService.AddUser(user);
+42.         return CreatedAtAction(nameof(GetUserById), new { id = user.UserId }, userDto);
+43.     }
+44. 
+45.     [HttpPut("{id}")]
+46.     public IActionResult UpdateUser(int id, UserDto updatedUserDto)
+47.     {
+48.         var updatedUser = _userMapper.MapToEntity(updatedUserDto);
+49.         _userService.UpdateUser(id, updatedUser);
+50.         return NoContent();
+51.     }
+52. 
+53.     [HttpDelete("{id}")]
+54.     public IActionResult DeleteUser(int id)
+55.     {
+56.         _userService.DeleteUser(id);
+57.         return NoContent();
+58.     }
+59. }
+60. 
+
+
+1. using Microsoft.AspNetCore.Mvc;
+2. 
+3. [ApiController]
+4. [Route("api/[controller]")]
+5. public class UserWorkingDaysController : ControllerBase
+6. {
+7.     private readonly UserWorkingDayService _userWorkingDayService;
+8.     private readonly UserWorkingDayMapper _userWorkingDayMapper;
+9. 
+10.     public UserWorkingDaysController(UserWorkingDayService userWorkingDayService, UserWorkingDayMapper userWorkingDayMapper)
+11.     {
+12.         _userWorkingDayService = userWorkingDayService;
+13.         _userWorkingDayMapper = userWorkingDayMapper;
+14.     }
+15. 
+16.     [HttpGet]
+17.     public IActionResult GetAllUserWorkingDays()
+18.     {
+19.         var userWorkingDays = _userWorkingDayService.GetAllUserWorkingDays();
+20.         var userWorkingDayDtos = userWorkingDays.Select(uwd => _userWorkingDayMapper.MapToDto(uwd));
+21.         return Ok(userWorkingDayDtos);
+22.     }
+23. 
+24.     [HttpGet("{id}")]
+25.     public IActionResult GetUserWorkingDayById(int id)
+26.     {
+27.         var userWorkingDay = _userWorkingDayService.GetUserWorkingDayById(id);
+28.         if (userWorkingDay == null)
+29.         {
+30.             return NotFound();
+31.         }
+32.         var userWorkingDayDto = _userWorkingDayMapper.MapToDto(userWorkingDay);
+33.         return Ok(userWorkingDayDto);
+34.     }
+35. 
+36.     [HttpPost]
+37.     public IActionResult AddUserWorkingDay(UserWorkingDayDto userWorkingDayDto)
+38.     {
+39.         var userWorkingDay = _userWorkingDayMapper.MapToEntity(userWorkingDayDto);
+40.         _userWorkingDayService.AddUserWorkingDay(userWorkingDay);
+41.         return CreatedAtAction(nameof(GetUserWorkingDayById), new { id = userWorkingDay.UserWorkingDayId }, userWorkingDayDto);
+42.     }
+43. 
+44.     [HttpPut("{id}")]
+45.     public IActionResult UpdateUserWorkingDay(int id, UserWorkingDayDto updatedUserWorkingDayDto)
+46.     {
+47.         var updatedUserWorkingDay = _userWorkingDayMapper.MapToEntity(updatedUserWorkingDayDto);
+48.         _userWorkingDayService.UpdateUserWorkingDay(id, updatedUserWorkingDay);
+49.         return NoContent();
+50.     }
+51. 
+52.     [HttpDelete("{id}")]
+53.     public IActionResult DeleteUserWorkingDay(int id)
+54.     {
+55.         _userWorkingDayService.DeleteUserWorkingDay(id);
+56.         return NoContent();
+57.     }
+58. }
+59. 
+
+
+1. using Microsoft.AspNetCore.Mvc;
+2. 
+3. [ApiController]
+4. [Route("api/[controller]")]
+5. public class WorkingDaysController : ControllerBase
+6. {
+7.     private readonly WorkingDayService _workingDayService;
+8.     private readonly WorkingDayMapper _workingDayMapper;
+9. 
+10.     public WorkingDaysController(WorkingDayService workingDayService, WorkingDayMapper workingDayMapper)
+11.     {
+12.         _workingDayService = workingDayService;
+13.         _workingDayMapper = workingDayMapper;
+14.     }
+15. 
+16.     [HttpGet]
+17.     public IActionResult GetAllWorkingDays()
+18.     {
+19.         var workingDays = _workingDayService.GetAllWorkingDays();
+20.         var workingDayDtos = workingDays.Select(wd => _workingDayMapper.MapToDto(wd));
+21.         return Ok(workingDayDtos);
+22.     }
+23. 
+24.     [HttpGet("{id}")]
+25.     public IActionResult GetWorkingDayById(int id)
+26.     {
+27.         var workingDay = _workingDayService.GetWorkingDayById(id);
+28.         if (workingDay == null)
+29.         {
+30.             return NotFound();
+31.         }
+32.         var workingDayDto = _workingDayMapper.MapToDto(workingDay);
+33.         return Ok(workingDayDto);
+34.     }
+35. 
+36.     [HttpPost]
+37.     public IActionResult AddWorkingDay(WorkingDayDto workingDayDto)
+38.     {
+39.         var workingDay = _workingDayMapper.MapToEntity(workingDayDto);
+40.         _workingDayService.AddWorkingDay(workingDay);
+41.         return CreatedAtAction(nameof(GetWorkingDayById), new { id = workingDay.WorkingDayId }, workingDayDto);
+42.     }
+43. 
+44.     [HttpPut("{id}")]
+45.     public IActionResult UpdateWorkingDay(int id, WorkingDayDto updatedWorkingDayDto)
+46.     {
+47.         var updatedWorkingDay = _workingDayMapper.MapToEntity(updatedWorkingDayDto);
+48.         _workingDayService.UpdateWorkingDay(id, updatedWorkingDay);
+49.         return NoContent();
+50.     }
+51. 
+52.     [HttpDelete("{id}")]
+53.     public IActionResult DeleteWorkingDay(int id)
+54.     {
+55.         _workingDayService.DeleteWorkingDay(id);
+56.         return NoContent();
+57.     }
+58. }
+59.
