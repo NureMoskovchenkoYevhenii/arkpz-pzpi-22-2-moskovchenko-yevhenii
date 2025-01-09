@@ -1,0 +1,199 @@
+﻿МІНІСТЕРСТВО ОСВІТИ І НАУКИ УКРАЇНИ
+ХАРКІВСЬКИЙ НАЦІОНАЛЬНИЙ УНІВЕРСИТЕТ РАДІОЕЛЕКТРОНІКИ
+
+
+
+
+
+
+
+
+Звіт
+з лабораторної роботи №3
+ з дисципліни «Аналіз та рефакторинг коду»
+на тему: «РОЗРОБКА БІЗНЕС-ЛОГІКИ ТА ФУНКЦІЙ АДМІНІСТРУВАННЯ СЕРВЕРНОЇ ЧАСТИНИ ПРОГРАМНОЇ СИСТЕМИ»
+
+
+
+
+
+
+
+
+
+
+Виконав:
+ студент групи ПЗПІ-22-2
+Московченко Євгеній Олексійович
+Перевірив:
+ст. викладач кафедри ПІ
+Сокорчук Ігор Петрович
+
+
+Харків 2024
+1 МЕТА РОБОТИ
+Метою лабораторної роботи є розробка бізнес-логіки та функції адміністрування серверної частини  програмної системи для управління мережею фастфуд-закладів, створення схеми та діаграми бази даних
+
+
+2 ХІД РОБОТИ
+Спочатку була створена UML діаграми діяльності та взаємодії для серверної частини у додатках Б, В відповідно. Визначено основні ролі, функції та алгоритми обчислень на стороні сервера. 
+Реалізовано систему авторизації з розподілом ролей та доступним їм функціям. Додана можливість редагувати робочі дні працівників, підтверджувати, скасовувати заяви на зміни розкладу. Зʼявилась можливість автоматичного контролю показників датчиків температури та вологості, створення звітів конкретних працівників із усіма робочими годинами та звітами.
+Відео з поясненнями знаходиться у додатку А.
+
+
+ВИСНОВКИ
+У результаті виконання лабораторної роботи було розроблено схеми UML для полегшення процесу визначення бізнес-логіки та функції адміністрування серверної частини програмної системи. Додано основний функціонал для обчислень, потрібних для бізнес-логіки, розподілений по ролям. 
+________________
+ДОДАТОК А
+Посилання на відео
+
+
+https://www.youtube.com/watch?v=XLATsRuoXmw
+________________
+
+
+ДОДАТОК Б
+UML діаграма діяльності для серверної частини
+
+
+  
+
+
+
+Рисунок Б.1 - UML діаграма діяльності для серверної частини
+________________
+
+
+ДОДАТОК В
+UML діаграма взаємодії для серверної частини
+
+
+  
+
+Рисунок В.1 - UML діаграма взаємодії для серверної частини
+________________
+ДОДАТОК Г
+
+
+Код класу авторизації
+
+
+1. using Microsoft.AspNetCore.Authentication;
+2. using Microsoft.Extensions.Options;
+3. using System.Net.Http.Headers;
+4. using System.Security.Claims;
+5. using System.Text.Encodings.Web;
+6. using System.Text;
+7. 
+8. public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+9. {
+10.     public BasicAuthenticationHandler(
+11.         IOptionsMonitor<AuthenticationSchemeOptions> options,
+12.         ILoggerFactory logger,
+13.         UrlEncoder encoder,
+14.         ISystemClock clock)
+15.         : base(options, logger, encoder, clock)
+16.     {
+17.     }
+18. 
+19.     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
+20.     {
+21.         if (!Request.Headers.ContainsKey("Authorization"))
+22.         {
+23.             return AuthenticateResult.Fail("Missing Authorization Header");
+24.         }
+25. 
+26.         try
+27.         {
+28.             var authHeader = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]);
+29.             var credentialBytes = Convert.FromBase64String(authHeader.Parameter);
+30.             var credentials = Encoding.UTF8.GetString(credentialBytes).Split(':');
+31.             var username = credentials[0];
+32.             var password = credentials[1];
+33. 
+34.             // Перевірка користувача та пароля
+35.             if (username == "admin" && password == "123456") // Замість цього використовуйте перевірку з бази даних
+36.             {
+37.                 var claims = new[] { new Claim(ClaimTypes.Name, username), new Claim(ClaimTypes.Role, "Admin") };
+38.                 var identity = new ClaimsIdentity(claims, Scheme.Name);
+39.                 var principal = new ClaimsPrincipal(identity);
+40.                 var ticket = new AuthenticationTicket(principal, Scheme.Name);
+41. 
+42.                 return AuthenticateResult.Success(ticket);
+43.             }
+44.             else if (username == "user" && password == "123456") // Замість цього використовуйте перевірку з бази даних
+45.             {
+46.                 var claims = new[] { new Claim(ClaimTypes.Name, username), new Claim(ClaimTypes.Role, "User") };
+47.                 var identity = new ClaimsIdentity(claims, Scheme.Name);
+48.                 var principal = new ClaimsPrincipal(identity);
+49.                 var ticket = new AuthenticationTicket(principal, Scheme.Name);
+50. 
+51.                 return AuthenticateResult.Success(ticket);
+52.             }
+53.             else
+54.             {
+55.                 return AuthenticateResult.Fail("Invalid Username or Password");
+56.             }
+57.         }
+58.         catch
+59.         {
+60.             return AuthenticateResult.Fail("Invalid Authorization Header");
+61.         }
+62.     }
+63. }
+64. 
+ 
+Фрагмент коду математичних обчислень
+
+
+1. public string GenerateUserWorkingDaysReport(int userId)
+2. {
+3.     var user = _userRepository.GetById(userId);
+4.     if (user == null)
+5.     {
+6.         throw new Exception("User not found");
+7.     }
+8. 
+9.     var report = $"Report for {user.FirstName} {user.LastName}\n";
+10. 
+11.     // Ensure UserWorkingDays is not null
+12.     var lastWeekWorkingDays = user.UserWorkingDays?
+13.         .Where(uwd => uwd.WorkingDay.StartTime >= DateTime.Now.AddDays(-7))
+14.         .ToList() ?? new List<UserWorkingDay>();
+15. 
+16.     double totalHours = 0;
+17.     foreach (var workingDay in lastWeekWorkingDays)
+18.     {
+19.         var hours = (workingDay.WorkingDay.EndTime - workingDay.WorkingDay.StartTime).TotalHours;
+20.         totalHours += hours;
+21.         report += $"Date: {workingDay.WorkingDay.StartTime.ToShortDateString()}, " +
+22.                   $"Start: {workingDay.WorkingDay.StartTime.ToShortTimeString()}, " +
+23.                   $"End: {workingDay.WorkingDay.EndTime.ToShortTimeString()}, " +
+24.                   $"Hours: {hours}\n";
+25.     }
+26.     report += $"Total Hours in Last 7 Days: {totalHours}\n";
+27. 
+28.     // Ensure UserChangeRequests is not null
+29.     var userChangeRequests = user.UserChangeRequests ?? new List<UserChangeRequest>();
+30.     report += "Change Requests:\n";
+31.     foreach (var userChangeRequest in userChangeRequests)
+32.     {
+33.         var request = userChangeRequest.ChangeRequest;
+34.         report += $"Request Date: {request.RequestDate.ToShortDateString()}, " +
+35.                   $"Status: {request.Status}, " +
+36.                   $"Description: {request.Description}\n";
+37.     }
+38. 
+39.     return report;
+40. }
+41. 
+
+
+1. public void SimulateAdjustmentActivation(SensorData sensorData, decimal minTemp, decimal maxTemp, decimal minHumidity, decimal maxHumidity)
+2. {
+3.     bool isTemperatureAdjustmentNeeded = sensorData.Temperature < minTemp || sensorData.Temperature > maxTemp;
+4.     bool isHumidityAdjustmentNeeded = sensorData.Humidity < minHumidity || sensorData.Humidity > maxHumidity;
+5. 
+6.     sensorData.IsTemperatureAdjustmentEnabled = isTemperatureAdjustmentNeeded;
+7.     sensorData.IsHumidityAdjustmentEnabled = isHumidityAdjustmentNeeded;
+8. }
